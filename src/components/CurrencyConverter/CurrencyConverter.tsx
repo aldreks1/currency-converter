@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch, setCurrencyValue } from "../store";
-import "./CurrencyConverter.css";
+import { RootState, AppDispatch, setCurrencyValue } from "../../store";
+import "./CurrencyConverter.scss";
 
 const CurrencyConverter: React.FC = () => {
   const rates = useSelector((state: RootState) => state.currency.rates);
