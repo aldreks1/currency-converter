@@ -10,8 +10,8 @@ const CurrencyConverter: React.FC = () => {
 
   const handleCurrencyChange =
     (currency: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = parseFloat(e.target.value);
-      if (!isNaN(value)) {
+      const value = e.target.value;
+      if (value === "" || /^[0-9]*\.?[0-9]*$/.test(value)) {
         dispatch(setCurrencyValue({ currency, value }));
       }
     };
@@ -22,11 +22,10 @@ const CurrencyConverter: React.FC = () => {
         <div className="input-group" key={currency}>
           <label htmlFor={currency}>{currency}</label>
           <input
-            type="number"
+            type="text"
             id={currency}
             value={values[currency]}
             onChange={handleCurrencyChange(currency)}
-            min="0"
           />
         </div>
       ))}

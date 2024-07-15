@@ -2,7 +2,7 @@ import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface CurrencyState {
   rates: { [key: string]: number };
-  values: { [key: string]: number };
+  values: { [key: string]: string };
 }
 
 const initialState: CurrencyState = {
@@ -11,8 +11,8 @@ const initialState: CurrencyState = {
     EUR: 1.07,
   },
   values: {
-    USD: 0,
-    EUR: 0,
+    USD: "0",
+    EUR: "0",
   },
 };
 
@@ -22,18 +22,29 @@ const currencySlice = createSlice({
   reducers: {
     setCurrencyValue: (
       state,
-      action: PayloadAction<{ currency: string; value: number }>
+      action: PayloadAction<{ currency: string; value: string }>
     ) => {
       const { currency, value } = action.payload;
       state.values[currency] = value;
+
       const baseRate = state.rates[currency];
-      Object.keys(state.values).forEach((key) => {
-        if (key !== currency) {
-          state.values[key] = parseFloat(
-            (value * (state.rates[key] / baseRate)).toFixed(2)
-          );
-        }
-      });
+      if (value !== "" && !isNaN(parseFloat(value))) {
+        const numericValue = parseFloat(value);
+        Object.keys(state.values).forEach((key) => {
+          if (key !== currency) {
+            state.values[key] = (
+              numericValue *
+              (state.rates[key] / baseRate)
+            ).toFixed(2);
+          }
+        });
+      } else {
+        Object.keys(state.values).forEach((key) => {
+          if (key !== currency) {
+            state.values[key] = "";
+          }
+        });
+      }
     },
   },
 });
