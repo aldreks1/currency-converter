@@ -1,11 +1,15 @@
-.input-group {
+.currency-input {
   display: flex;
+  align-items: start;
+  gap: 10px;
   flex-direction: column;
-  margin-bottom: 10px;
-
+  div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
   label {
-    margin-bottom: 5px;
-    color: #010101;
+    margin-right: 10px;
     font-weight: bold;
   }
 
@@ -20,6 +24,22 @@
       border-color: #0056b3;
       box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
       outline: none;
+    }
+  }
+
+  .remove-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    img {
+      width: 20px;
+      height: 20px;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.2);
+      }
     }
   }
 }

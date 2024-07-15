@@ -7,6 +7,7 @@ import {
   setCurrencyValue,
   fetchExchangeRates,
   addCurrency,
+  removeCurrency,
 } from "../../store";
 import CurrencyInput from "../CurrencyInput";
 import "./CurrencyConverter.scss";
@@ -38,6 +39,14 @@ const CurrencyConverter: React.FC = () => {
     }
   };
 
+  const handleRemoveCurrency = (currency: string) => () => {
+    dispatch(removeCurrency(currency));
+  };
+
+  const availableOptions = Object.keys(rates).filter(
+    (currency) => !availableCurrencies.includes(currency)
+  );
+
   return (
     <div className="currency-converter">
       {status === "loading" && <p>Loading exchange rates...</p>}
@@ -45,21 +54,32 @@ const CurrencyConverter: React.FC = () => {
       {status === "succeeded" && Object.keys(rates).length > 0 && (
         <>
           {availableCurrencies.map((currency) => (
-            <CurrencyInput
-              key={currency}
-              currency={currency}
-              value={values[currency]}
-              onChange={handleCurrencyChange(currency)}
-            />
+            <div key={currency} className="currency-row">
+              <CurrencyInput
+                currency={currency}
+                value={values[currency]}
+                onChange={handleCurrencyChange(currency)}
+                onRemove={handleRemoveCurrency(currency)}
+              />
+            </div>
           ))}
           <div className="add-currency">
-            <input
-              type="text"
+            <select
               value={newCurrency}
-              onChange={(e) => setNewCurrency(e.target.value.toUpperCase())}
-              placeholder="Add new currency (e.g., JPY)"
-            />
-            <button onClick={handleAddCurrency}>Add Currency</button>
+              onChange={(e) => setNewCurrency(e.target.value)}
+            >
+              <option value="" disabled>
+                Select currency to add
+              </option>
+              {availableOptions.map((currency) => (
+                <option key={currency} value={currency}>
+                  {currency}
+                </option>
+              ))}
+            </select>
+            <button onClick={handleAddCurrency} disabled={!newCurrency}>
+              Add Currency
+            </button>
           </div>
         </>
       )}

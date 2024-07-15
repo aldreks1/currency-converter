@@ -16,7 +16,7 @@ interface CurrencyState {
 
 const initialState: CurrencyState = {
   rates: {},
-  values: {},
+  values: { USD: "0", EUR: "0" },
   availableCurrencies: ["USD", "EUR"],
   status: "idle",
   error: null,
@@ -67,7 +67,22 @@ const currencySlice = createSlice({
       if (!state.availableCurrencies.includes(newCurrency)) {
         state.availableCurrencies.push(newCurrency);
         state.values[newCurrency] = "";
+
+        const baseRate = state.rates[state.availableCurrencies[0]];
+        const baseValue =
+          parseFloat(state.values[state.availableCurrencies[0]]) || 0;
+        state.values[newCurrency] = (
+          baseValue *
+          (state.rates[newCurrency] / baseRate)
+        ).toFixed(2);
       }
+    },
+    removeCurrency: (state, action: PayloadAction<string>) => {
+      const currencyToRemove = action.payload;
+      state.availableCurrencies = state.availableCurrencies.filter(
+        (currency) => currency !== currencyToRemove
+      );
+      delete state.values[currencyToRemove];
     },
   },
   extraReducers: (builder) => {
@@ -95,7 +110,8 @@ const currencySlice = createSlice({
   },
 });
 
-export const { setCurrencyValue, addCurrency } = currencySlice.actions;
+export const { setCurrencyValue, addCurrency, removeCurrency } =
+  currencySlice.actions;
 
 const store = configureStore({
   reducer: {
