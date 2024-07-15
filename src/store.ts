@@ -7,12 +7,14 @@ interface CurrencyState {
 
 const initialState: CurrencyState = {
   rates: {
-    USD: 1,
-    EUR: 1.07,
+    USD: 1.07,
+    EUR: 1,
+    //  BYN: 3.5,
   },
   values: {
     USD: "0",
     EUR: "0",
+    //  BYN: "0",
   },
 };
 
@@ -41,7 +43,7 @@ const currencySlice = createSlice({
       } else {
         Object.keys(state.values).forEach((key) => {
           if (key !== currency) {
-            state.values[key] = "";
+            state.values[key] = "0";
           }
         });
       }

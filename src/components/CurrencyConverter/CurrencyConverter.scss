@@ -1,18 +1,14 @@
 .currency-converter {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  gap: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-.input-group {
-  display: flex;
-  flex-direction: column;
-  
-}
-
-@media (min-width: 768px) {
+@media (max-width: 768px) {
   .currency-converter {
-    flex-direction: row;
-    gap: 20px;
+    flex-direction: column;
+    gap: 10px;
   }
 }
