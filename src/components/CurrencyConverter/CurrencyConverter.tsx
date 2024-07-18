@@ -1,5 +1,4 @@
-// src/components/CurrencyConverter/CurrencyConverter.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   RootState,
@@ -8,6 +7,8 @@ import {
   fetchExchangeRates,
   addCurrency,
   removeCurrency,
+  setNewCurrency,
+  clearNewCurrency,
 } from "../../store";
 import CurrencyInput from "../CurrencyInput";
 import "./CurrencyConverter.scss";
@@ -18,9 +19,11 @@ const CurrencyConverter: React.FC = () => {
   const availableCurrencies = useSelector(
     (state: RootState) => state.currency.availableCurrencies
   );
+  const newCurrency = useSelector(
+    (state: RootState) => state.currency.newCurrency
+  );
   const status = useSelector((state: RootState) => state.currency.status);
   const dispatch = useDispatch<AppDispatch>();
-  const [newCurrency, setNewCurrency] = useState("");
 
   useEffect(() => {
     if (status === "idle") {
@@ -35,7 +38,7 @@ const CurrencyConverter: React.FC = () => {
   const handleAddCurrency = () => {
     if (newCurrency && !availableCurrencies.includes(newCurrency)) {
       dispatch(addCurrency(newCurrency));
-      setNewCurrency("");
+      dispatch(clearNewCurrency());
     }
   };
 
@@ -66,7 +69,7 @@ const CurrencyConverter: React.FC = () => {
           <div className="add-currency">
             <select
               value={newCurrency}
-              onChange={(e) => setNewCurrency(e.target.value)}
+              onChange={(e) => dispatch(setNewCurrency(e.target.value))}
             >
               <option value="" disabled>
                 Select currency to add

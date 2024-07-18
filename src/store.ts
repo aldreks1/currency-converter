@@ -1,33 +1,33 @@
 import {
-  configureStore,
   createSlice,
-  PayloadAction,
   createAsyncThunk,
+  configureStore,
+  PayloadAction,
 } from "@reduxjs/toolkit";
 import axios from "axios";
 
-interface CurrencyState {
+const API_URL = "https://api.exchangerate-api.com/v4/latest/USD";
+
+export interface CurrencyState {
   rates: { [key: string]: number };
   values: { [key: string]: string };
   availableCurrencies: string[];
+  newCurrency: string;
   status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
 }
 
 const initialState: CurrencyState = {
   rates: {},
-  values: { USD: "0", EUR: "0" },
+  values: {},
   availableCurrencies: ["USD", "EUR"],
+  newCurrency: "",
   status: "idle",
-  error: null,
 };
 
 export const fetchExchangeRates = createAsyncThunk(
   "currency/fetchExchangeRates",
   async () => {
-    const response = await axios.get(
-      "https://api.exchangerate-api.com/v4/latest/USD"
-    );
+    const response = await axios.get(API_URL);
     return response.data.rates;
   }
 );
@@ -42,22 +42,13 @@ const currencySlice = createSlice({
     ) => {
       const { currency, value } = action.payload;
       state.values[currency] = value;
-
-      const baseRate = state.rates[currency];
-      if (value !== "" && !isNaN(parseFloat(value))) {
-        const numericValue = parseFloat(value);
-        Object.keys(state.values).forEach((key) => {
-          if (key !== currency) {
-            state.values[key] = (
-              numericValue *
-              (state.rates[key] / baseRate)
-            ).toFixed(2);
-          }
-        });
-      } else {
-        Object.keys(state.values).forEach((key) => {
-          if (key !== currency) {
-            state.values[key] = "";
+      const rate = state.rates[currency];
+      if (rate) {
+        const baseValue = parseFloat(value) || 0;
+        state.availableCurrencies.forEach((cur) => {
+          if (cur !== currency) {
+            const conversionRate = state.rates[cur] / rate;
+            state.values[cur] = (baseValue * conversionRate).toFixed(2);
           }
         });
       }
@@ -66,15 +57,7 @@ const currencySlice = createSlice({
       const newCurrency = action.payload;
       if (!state.availableCurrencies.includes(newCurrency)) {
         state.availableCurrencies.push(newCurrency);
-        state.values[newCurrency] = "";
-
-        const baseRate = state.rates[state.availableCurrencies[0]];
-        const baseValue =
-          parseFloat(state.values[state.availableCurrencies[0]]) || 0;
-        state.values[newCurrency] = (
-          baseValue *
-          (state.rates[newCurrency] / baseRate)
-        ).toFixed(2);
+        state.values[newCurrency] = "0";
       }
     },
     removeCurrency: (state, action: PayloadAction<string>) => {
@@ -83,6 +66,12 @@ const currencySlice = createSlice({
         (currency) => currency !== currencyToRemove
       );
       delete state.values[currencyToRemove];
+    },
+    setNewCurrency: (state, action: PayloadAction<string>) => {
+      state.newCurrency = action.payload;
+    },
+    clearNewCurrency: (state) => {
+      state.newCurrency = "";
     },
   },
   extraReducers: (builder) => {
@@ -95,23 +84,24 @@ const currencySlice = createSlice({
         (state, action: PayloadAction<{ [key: string]: number }>) => {
           state.status = "succeeded";
           state.rates = action.payload;
-          // Initialize values with empty strings for new rates
-          Object.keys(state.rates).forEach((currency) => {
-            if (!state.values[currency]) {
-              state.values[currency] = "";
-            }
+          state.availableCurrencies.forEach((currency) => {
+            state.values[currency] = "0";
           });
         }
       )
-      .addCase(fetchExchangeRates.rejected, (state, action) => {
+      .addCase(fetchExchangeRates.rejected, (state) => {
         state.status = "failed";
-        state.error = action.error.message || "Failed to fetch exchange rates";
       });
   },
 });
 
-export const { setCurrencyValue, addCurrency, removeCurrency } =
-  currencySlice.actions;
+export const {
+  setCurrencyValue,
+  addCurrency,
+  removeCurrency,
+  setNewCurrency,
+  clearNewCurrency,
+} = currencySlice.actions;
 
 const store = configureStore({
   reducer: {
@@ -121,5 +111,4 @@ const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
 export default store;
