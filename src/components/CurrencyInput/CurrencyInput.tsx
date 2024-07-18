@@ -15,6 +15,12 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   onChange,
   onRemove,
 }) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === "" || /^[0-9]*\.?[0-9]*$/.test(value)) {
+      onChange(value);
+    }
+  };
   return (
     <div className="currency-input">
       <label htmlFor={currency}>{currency}</label>
@@ -23,7 +29,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           id={currency}
           type="text"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={handleChange}
         />
         <button onClick={onRemove} className="remove-button">
           <img src={crossIcon} alt="Remove" />
