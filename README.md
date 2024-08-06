@@ -7,7 +7,6 @@ This is a Currency Converter application built with React, Redux Toolkit, and Ty
 Follow these steps to download, install, and run the application:
 
 1. **Clone the Repository**:
-<<<<<<< feature/add-new-currencies
 
    ```bash
    git clone git@github.com:aldreks1/currency-converter.git
@@ -40,7 +39,6 @@ Follow these steps to download, install, and run the application:
 ## Usage
 
 1. **Fetch Exchange Rates**:
-<<<<<<< feature/add-new-currencies
 
    - On application start, the current exchange rates are fetched from an API.
 
@@ -60,7 +58,6 @@ Follow these steps to download, install, and run the application:
 
 3. **Remove Currency**:
     - Click the cross icon next to the currency input field to remove that currency from the converter.
->>>>>>> master
 
 ## Contributing
 
